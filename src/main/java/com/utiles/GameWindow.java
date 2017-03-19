@@ -43,12 +43,38 @@ public class GameWindow {
 
 	public void repaintBackground() {
 		gc.setFill(Color.BLACK);
-		gc.fillRect(0, 0, width, height);
-		gc.setFill(Color.SANDYBROWN);
+		gc.fillRect(0, 0, width + 10, height + 10);
 		for (int i = 0; i < STARS_AMOUNT; i++) {
-			gc.fillOval(stars[i].getX(), stars[i].getY(), 2, 2);
+			Color color;
+			int number = new Random().nextInt(3) + 2;
+			switch (number) {
+			case 2:
+				color = Color.YELLOW;
+				break;
+			case 3:
+				color = Color.GREEN;
+				break;
+			case 4:
+				color = Color.RED;
+				break;
+			default:
+				color = Color.BLUE;
+				break;
+			}
+			gc.setFill(color);
+			gc.fillOval(stars[i].getX(), stars[i].getY(), number, number);
 		}
 
+	}
+
+	public void updateBackground() {
+		for (int i = 0; i < stars.length; i++) {
+			stars[i] = stars[i].add(0.2, 0.3);
+			if (stars[i].getX() > width + 10 || stars[i].getY() > height + 10) {
+				stars[i] = new Point2D(new Random().nextInt(2 * width) - width, -10);
+			}
+
+		}
 	}
 
 	public GraphicsContext getGc() {

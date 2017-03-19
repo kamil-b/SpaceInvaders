@@ -78,6 +78,7 @@ public class Game extends AnimationTimer {
 	}
 
 	public void update() {
+		gameWindow.updateBackground();
 		long timeNow = System.currentTimeMillis();
 		updatePlayer();
 		updateEnemies();
@@ -132,7 +133,7 @@ public class Game extends AnimationTimer {
 	private void shotMissleByPlayer() {
 		double nextMissle = System.currentTimeMillis() - timeWhenMissleShotByPlayer;
 		if (inputManager.isSpace() && nextMissle > 300) {
-			Missle missle = new Missle(player.getPosX(), player.getPosY(), true);
+			Missle missle = new Missle(player.getPosX()+ 15, player.getPosY(), true);
 			missles.add(missle);
 			timeWhenMissleShotByPlayer = System.currentTimeMillis();
 		}
