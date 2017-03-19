@@ -2,10 +2,10 @@ package com.utiles;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import com.entities.Enemy;
 import com.entities.Explosion;
-import com.entities.ImageHelper;
 import com.entities.Missle;
 import com.entities.Player;
 
@@ -27,7 +27,8 @@ public class Game extends AnimationTimer {
 
 	private int WIDTH = 700;
 	private int HEIGHT = 400;
-	private long timeWhenMissleShot;
+	private long timeWhenMissleShotByPlayer;
+	private long timeWhenMissleShotByEnemy;
 
 	public Game(Stage primaryStage) {
 		gameWindow = new GameWindow(primaryStage, WIDTH, HEIGHT);
@@ -68,28 +69,56 @@ public class Game extends AnimationTimer {
 	}
 
 	public void update() {
+		updatePlayer();
+		updateEnemies();
+		shotMissleByPlayer();
+		shotMissleByEnemy();
+
+		for (Missle m : missles) {
+			if (m.isFiredByPlayer())
+				m.update(0, -5);
+			else {
+				m.update(0, 5);
+			}
+		}
+
+	}
+
+	private void updatePlayer() {
 		inputManager.checkIfKeyPressed();
 		if (inputManager.isLeft()) {
 			player.update(-5, 0);
 		} else if (inputManager.isRight()) {
 			player.update(5, 0);
 		}
+		for(int x = 0; x < missles.size(); x++){
+			if(!missles.get(x).isFiredByPlayer() && missles.get(x).checkColision(player)){
+				System.out.println("BOOOM");
+				missles.remove(x);
+			}
+		}
+	}
 
-		updateEnemies();
-		shotMissle();
-
-		for (Missle m : missles) {
-			m.update(0, -5);
+	private void shotMissleByEnemy() {
+		double nextMissle = System.currentTimeMillis() - timeWhenMissleShotByEnemy; 
+		int row = new Random().nextInt(ROWS);
+		int column = new Random().nextInt(COLUMNS);
+		if (enemyList[row][column].isAlive()) {
+			if (nextMissle > 300) {
+				Missle missle = new Missle(enemyList[row][column].getPosX(), enemyList[row][column].getPosY(), false);
+				missles.add(missle);
+				timeWhenMissleShotByEnemy = System.currentTimeMillis();
+			}
 		}
 
 	}
 
-	private void shotMissle() {
-		double nextMissle = System.currentTimeMillis() - timeWhenMissleShot;
+	private void shotMissleByPlayer() {
+		double nextMissle = System.currentTimeMillis() - timeWhenMissleShotByPlayer;
 		if (inputManager.isSpace() && nextMissle > 300) {
-			Missle missle = new Missle(player.getPosX(), player.getPosY());
+			Missle missle = new Missle(player.getPosX(), player.getPosY(), true);
 			missles.add(missle);
-			timeWhenMissleShot = System.currentTimeMillis();
+			timeWhenMissleShotByPlayer = System.currentTimeMillis();
 		}
 	}
 
@@ -100,7 +129,8 @@ public class Game extends AnimationTimer {
 			for (int j = 0; j < COLUMNS; j++) {
 				enemyList[i][j].update(update);
 				for (int x = 0; x < missles.size(); x++) {
-					if (enemyList[i][j].isAlive() && missles.get(x).checkColision(enemyList[i][j])) {
+					if (missles.get(x).isFiredByPlayer() && enemyList[i][j].isAlive()
+							&& missles.get(x).checkColision(enemyList[i][j])) {
 						explosion = new Explosion(enemyList[i][j].getPosX(), enemyList[i][j].getPosY());
 
 						enemyList[i][j].setAlive(false);
