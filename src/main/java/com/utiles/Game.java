@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.entities.Barier;
 import com.entities.Enemy;
 import com.entities.Explosion;
 import com.entities.Missle;
@@ -16,7 +17,7 @@ import javafx.stage.Stage;
 public class Game extends AnimationTimer {
 
 	private static final int ROWS = 4;
-	private static final int COLUMNS = 16;
+	private static final int COLUMNS = 15;
 	private int score = 0;
 	private GameWindow gameWindow;
 	private Explosion explosion;
@@ -25,10 +26,11 @@ public class Game extends AnimationTimer {
 	private List<Missle> missles;
 	private InputMenager inputManager;
 
-	private int WIDTH = 700;
-	private int HEIGHT = 400;
+	public static int WIDTH = 700;
+	public static int HEIGHT = 400;
 	private long timeWhenMissleShotByPlayer;
 	private long timeWhenMissleShotByEnemy;
+	private List<Explosion> explosions;
 
 	public Game(Stage primaryStage) {
 		gameWindow = new GameWindow(primaryStage, WIDTH, HEIGHT);
@@ -37,7 +39,7 @@ public class Game extends AnimationTimer {
 		inputManager = new InputMenager(gameWindow.getCanvas());
 		enemyList = new Enemy[ROWS][COLUMNS];
 		missles = new ArrayList<Missle>();
-
+		explosions = new ArrayList<Explosion>();
 		generateEnemyMatrix();
 	}
 
@@ -52,6 +54,7 @@ public class Game extends AnimationTimer {
 		gameWindow.repaintBackground();
 		gameWindow.showGameStaticstics(score);
 		player.show(gameWindow.getGc());
+		player.getBarier().show(gameWindow.getGc());
 
 		for (int i = 0; i < ROWS; i++) {
 			for (int j = 0; j < COLUMNS; j++) {
@@ -63,17 +66,23 @@ public class Game extends AnimationTimer {
 		for (Missle m : missles) {
 			m.show(gameWindow.getGc());
 		}
-		if (explosion != null) {
-			explosion.show(gameWindow.getGc());
+		for (int i = 0; i < explosions.size();i++) {
+			explosions.get(i).show(gameWindow.getGc());
 		}
+		
+/*		if (explosion != null) {
+			explosion.show(gameWindow.getGc());
+		}*/
+		
+
 	}
 
 	public void update() {
+		long timeNow = System.currentTimeMillis();
 		updatePlayer();
 		updateEnemies();
 		shotMissleByPlayer();
 		shotMissleByEnemy();
-
 		for (Missle m : missles) {
 			if (m.isFiredByPlayer())
 				m.update(0, -5);
@@ -81,7 +90,12 @@ public class Game extends AnimationTimer {
 				m.update(0, 5);
 			}
 		}
-
+		for (int i = 0; i < explosions.size();i++) {
+			if( (timeNow - explosions.get(i).getTimeWhenCreated()) > 500)
+			{
+				explosions.remove(i);
+			}
+		}
 	}
 
 	private void updatePlayer() {
@@ -91,16 +105,18 @@ public class Game extends AnimationTimer {
 		} else if (inputManager.isRight()) {
 			player.update(5, 0);
 		}
-		for(int x = 0; x < missles.size(); x++){
-			if(!missles.get(x).isFiredByPlayer() && missles.get(x).checkColision(player)){
-				System.out.println("BOOOM");
+		for (int x = 0; x < missles.size(); x++) {
+			if (!missles.get(x).isFiredByPlayer() && missles.get(x).checkColision(player)) {
+				player.getBarier().setHit(true);
+				player.getBarier().setVisiable(true);
 				missles.remove(x);
 			}
 		}
+		player.getBarier().updateBarierStatus();
 	}
 
 	private void shotMissleByEnemy() {
-		double nextMissle = System.currentTimeMillis() - timeWhenMissleShotByEnemy; 
+		double nextMissle = System.currentTimeMillis() - timeWhenMissleShotByEnemy;
 		int row = new Random().nextInt(ROWS);
 		int column = new Random().nextInt(COLUMNS);
 		if (enemyList[row][column].isAlive()) {
@@ -132,7 +148,7 @@ public class Game extends AnimationTimer {
 					if (missles.get(x).isFiredByPlayer() && enemyList[i][j].isAlive()
 							&& missles.get(x).checkColision(enemyList[i][j])) {
 						explosion = new Explosion(enemyList[i][j].getPosX(), enemyList[i][j].getPosY());
-
+						explosions.add(explosion);
 						enemyList[i][j].setAlive(false);
 						score++;
 						missles.remove(x);
@@ -148,16 +164,16 @@ public class Game extends AnimationTimer {
 		for (int i = 0; i < ROWS; i++) {
 			for (int j = 0; j < COLUMNS; j++) {
 				if (i == 0) {
-					enemyList[i][j] = new Enemy(j * (WIDTH / COLUMNS) + 20, i * 30,
+					enemyList[i][j] = new Enemy(j * ((WIDTH-35) / COLUMNS) +30, i * 30,
 							new Image(getClass().getResourceAsStream("../pictures/red.png")));
 				} else if (i == 1) {
-					enemyList[i][j] = new Enemy(j * (WIDTH / COLUMNS) + 20, i * 30,
+					enemyList[i][j] = new Enemy(j * ((WIDTH-35) / COLUMNS) +30 , i * 30,
 							new Image(getClass().getResourceAsStream("../pictures/lightred.png")));
 				} else if (i == 2) {
-					enemyList[i][j] = new Enemy(j * (WIDTH / COLUMNS) + 20, i * 30,
+					enemyList[i][j] = new Enemy(j * ((WIDTH-35) / COLUMNS) +30 , i * 30,
 							new Image(getClass().getResourceAsStream("../pictures/orange2.png")));
 				} else {
-					enemyList[i][j] = new Enemy(j * (WIDTH / COLUMNS) + 20, i * 30,
+					enemyList[i][j] = new Enemy(j * ((WIDTH-35) / COLUMNS) +30 , i * 30,
 							new Image(getClass().getResourceAsStream("../pictures/green.png")));
 				}
 			}

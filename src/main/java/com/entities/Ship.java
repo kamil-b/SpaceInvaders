@@ -1,5 +1,7 @@
 package com.entities;
 
+import com.utiles.Game;
+
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -30,14 +32,6 @@ public abstract class Ship {
 		gc.drawImage(image, posX, posY);
 	}
 
-	public int getPosX() {
-		return posX;
-	}
-
-	public int getPosY() {
-		return posY;
-	}
-
 	public boolean checkColision(Ship ship){
 		Point2D me = new Point2D(posX, posY);
 		Point2D notMe = new Point2D(ship.getPosX()+15,ship.getPosY()+15);
@@ -48,5 +42,22 @@ public abstract class Ship {
 			return false;
 		}
 	}
+
+	public int getPosX() {
+		return posX;
+	}
+
+	public int getPosY() {
+		return posY;
+	}
+
+	public void setPosX(int posX) {
+		this.posX = posX;
+	}
+
+	public void setPosY(int posY) {
+		this.posY = posY;
+	}
+	
 	
 }
