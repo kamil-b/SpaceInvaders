@@ -1,4 +1,4 @@
-package com.entities;
+package com.entities.ship;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -58,7 +58,6 @@ public class Barier extends Enemy {
 	}
 
 	public void updateBarierStatus(int score) {
-		System.out.println("score" + score);
 		int scoreChange = score - recentPlayerScore;
 		energy = energy + scoreChange;
 		if (isHit) {

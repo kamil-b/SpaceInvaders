@@ -1,11 +1,12 @@
-package com.entities;
+package com.entities.ship;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 public class Explosion extends Enemy {
 
-	private long timeWhenCreated ;
+	private long timeWhenCreated;
+
 	public Explosion(int posX, int posY) {
 		super(posX, posY);
 		image = new Image(getClass().getResourceAsStream("../pictures/explosion.png"));
@@ -14,7 +15,7 @@ public class Explosion extends Enemy {
 
 	@Override
 	public void show(GraphicsContext gc) {
-		
+
 		gc.drawImage(image, posX, posY);
 
 	}
@@ -22,5 +23,5 @@ public class Explosion extends Enemy {
 	public long getTimeWhenCreated() {
 		return timeWhenCreated;
 	}
-	
+
 }

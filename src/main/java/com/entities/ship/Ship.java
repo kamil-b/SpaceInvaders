@@ -1,6 +1,4 @@
-package com.entities;
-
-import com.utiles.Game;
+package com.entities.ship;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;

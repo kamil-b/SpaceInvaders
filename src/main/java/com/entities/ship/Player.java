@@ -1,4 +1,4 @@
-package com.entities;
+package com.entities.ship;
 
 import com.utiles.Game;
 

@@ -14,6 +14,7 @@ public class GameWindow {
 
 	private static final int STARS_AMOUNT = 300;
 	private long timeAtGameStart = System.currentTimeMillis();
+	private long gameLength;
 	private Canvas canvas;
 	private GraphicsContext gc;
 	private VBox vbox;
@@ -86,9 +87,18 @@ public class GameWindow {
 	}
 
 	public void showGameStaticstics(int score) {
-		long gameLength = (System.currentTimeMillis() - timeAtGameStart) / 1000;
+		gameLength = (System.currentTimeMillis() - timeAtGameStart) / 1000;
 		gc.setFill(Color.RED);
 		gc.fillText("Score: " + (score * 10), 500, 390);
 		gc.fillText("Time: " + gameLength, 450, 390);
 	}
+	
+	public long getTimeAtGameStart() {
+		return timeAtGameStart;
+	}
+	
+	public long getGameLength() {
+		return gameLength;
+	}
+
 }

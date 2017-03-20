@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.entities.Barier;
-import com.entities.Enemy;
-import com.entities.Explosion;
-import com.entities.Missle;
-import com.entities.Player;
+import com.entities.missles.MissleInterface;
+import com.entities.missles.MissleFactory;
+import com.entities.ship.Enemy;
+import com.entities.ship.Explosion;
+import com.entities.ship.Player;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.image.Image;
@@ -18,13 +18,15 @@ public class Game extends AnimationTimer {
 
 	private static final int ROWS = 4;
 	private static final int COLUMNS = 15;
+	private int liveEnemyNumber = ROWS * COLUMNS;
 	private int score = 0;
 	private GameWindow gameWindow;
 	private Explosion explosion;
 	private Player player;
 	private Enemy[][] enemyList;
-	private List<Missle> missles;
+	private List<MissleInterface> missles;
 	private InputMenager inputManager;
+	private int misslesCount = 0;
 
 	public static int WIDTH = 700;
 	public static int HEIGHT = 400;
@@ -37,8 +39,7 @@ public class Game extends AnimationTimer {
 		player = new Player(WIDTH / 2, 340);
 
 		inputManager = new InputMenager(gameWindow.getCanvas());
-		enemyList = new Enemy[ROWS][COLUMNS];
-		missles = new ArrayList<Missle>();
+		missles = new ArrayList<MissleInterface>();
 		explosions = new ArrayList<Explosion>();
 		generateEnemyMatrix();
 	}
@@ -63,7 +64,7 @@ public class Game extends AnimationTimer {
 			}
 		}
 
-		for (Missle m : missles) {
+		for (MissleInterface m : missles) {
 			m.show(gameWindow.getGc());
 		}
 		for (int i = 0; i < explosions.size(); i++) {
@@ -79,7 +80,7 @@ public class Game extends AnimationTimer {
 		updateEnemies();
 		shotMissleByPlayer();
 		shotMissleByEnemy();
-		for (Missle m : missles) {
+		for (MissleInterface m : missles) {
 			if (m.isFiredByPlayer())
 				m.update(0, -5);
 			else {
@@ -91,6 +92,7 @@ public class Game extends AnimationTimer {
 				explosions.remove(i);
 			}
 		}
+
 	}
 
 	private void updatePlayer() {
@@ -108,17 +110,28 @@ public class Game extends AnimationTimer {
 			}
 		}
 		player.getBarier().updateBarierStatus(score);
-		
+
 	}
 
 	private void shotMissleByEnemy() {
 		double nextMissle = System.currentTimeMillis() - timeWhenMissleShotByEnemy;
+		MissleInterface missle;
 		int row = new Random().nextInt(ROWS);
 		int column = new Random().nextInt(COLUMNS);
+
 		if (enemyList[row][column].isAlive()) {
-			if (nextMissle > 300) {
-				Missle missle = new Missle(enemyList[row][column].getPosX(), enemyList[row][column].getPosY(), false);
+			if (nextMissle > 300 - calculateDifficulty()) {
+				if (misslesCount == 5) {
+					missle = MissleFactory.getBigMissle(enemyList[row][column].getPosX(),
+							enemyList[row][column].getPosY());
+					misslesCount = 0;
+				} else {
+					missle = MissleFactory.getNormalMissle(enemyList[row][column].getPosX(),
+							enemyList[row][column].getPosY());
+				}
+
 				missles.add(missle);
+				misslesCount++;
 				timeWhenMissleShotByEnemy = System.currentTimeMillis();
 			}
 		}
@@ -128,12 +141,17 @@ public class Game extends AnimationTimer {
 	private void shotMissleByPlayer() {
 		double nextMissle = System.currentTimeMillis() - timeWhenMissleShotByPlayer;
 		if (inputManager.isSpace() && nextMissle > 300) {
-			Missle missle = new Missle(player.getPosX() + 15, player.getPosY(), true);
+			MissleInterface missle = MissleFactory.getPlayerMissle(player.getPosX() + 15, player.getPosY());
 			missles.add(missle);
 			timeWhenMissleShotByPlayer = System.currentTimeMillis();
 		}
 	}
 
+	private long calculateDifficulty(){
+		return gameWindow.getGameLength() ;
+
+	}
+	
 	private void updateEnemies() {
 		int update = (System.currentTimeMillis() / 1000 % 2 == 0) ? 1 : -1;
 
@@ -148,29 +166,45 @@ public class Game extends AnimationTimer {
 						enemyList[i][j].setAlive(false);
 						score++;
 						missles.remove(x);
-
+						liveEnemyNumber--;
+						System.out.println(liveEnemyNumber);
 					}
 				}
 			}
 		}
+		if (liveEnemyNumber == 0)
+		{
+			this.stop();
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			player.setPosX(WIDTH/2);
+			player.setPosX(340);
+			 generateEnemyMatrix();
+			 liveEnemyNumber = ROWS * COLUMNS;
+			 this.start();
+		}
 	}
 
 	private void generateEnemyMatrix() {
+		enemyList = new Enemy[ROWS][COLUMNS];
 		// ImageHelper imageHelper = new ImageHelper();
 		for (int i = 0; i < ROWS; i++) {
 			for (int j = 0; j < COLUMNS; j++) {
 				if (i == 0) {
 					enemyList[i][j] = new Enemy(j * ((WIDTH - 35) / COLUMNS) + 30, i * 30,
-							new Image(getClass().getResourceAsStream("../pictures/red.png")));
+							new Image(getClass().getResourceAsStream("../entities/pictures/red.png")));
 				} else if (i == 1) {
 					enemyList[i][j] = new Enemy(j * ((WIDTH - 35) / COLUMNS) + 30, i * 30,
-							new Image(getClass().getResourceAsStream("../pictures/lightred.png")));
+							new Image(getClass().getResourceAsStream("../entities/pictures/lightred.png")));
 				} else if (i == 2) {
 					enemyList[i][j] = new Enemy(j * ((WIDTH - 35) / COLUMNS) + 30, i * 30,
-							new Image(getClass().getResourceAsStream("../pictures/orange2.png")));
+							new Image(getClass().getResourceAsStream("../entities/pictures/orange2.png")));
 				} else {
 					enemyList[i][j] = new Enemy(j * ((WIDTH - 35) / COLUMNS) + 30, i * 30,
-							new Image(getClass().getResourceAsStream("../pictures/green.png")));
+							new Image(getClass().getResourceAsStream("../entities/pictures/green.png")));
 				}
 			}
 		}

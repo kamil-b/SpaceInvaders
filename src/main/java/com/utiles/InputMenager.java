@@ -31,14 +31,13 @@ public class InputMenager {
 				default:
 					break;
 				}
-				System.out.println("pressed key:" + key.getCode());
 			}
 		});
-		
-		canvas.setOnKeyReleased(new EventHandler<KeyEvent>(){
+
+		canvas.setOnKeyReleased(new EventHandler<KeyEvent>() {
 
 			public void handle(KeyEvent key) {
-				switch(key.getCode()){
+				switch (key.getCode()) {
 				case A:
 					left = false;
 					break;
@@ -50,11 +49,9 @@ public class InputMenager {
 				default:
 					break;
 				}
-				System.out.println("released key:" + key.getCode());
 			}
-			
-		}
-				);
+
+		});
 	}
 
 	public boolean isLeft() {
@@ -64,7 +61,7 @@ public class InputMenager {
 	public boolean isRight() {
 		return right;
 	}
-	
+
 	public boolean isSpace() {
 		return space;
 	}
