@@ -29,14 +29,14 @@ public class Game extends AnimationTimer {
 	private int misslesCount = 0;
 
 	public static int WIDTH = 700;
-	public static int HEIGHT = 400;
+	public static int HEIGHT = 450;
 	private long timeWhenMissleShotByPlayer;
 	private long timeWhenMissleShotByEnemy;
 	private List<Explosion> explosions;
 
 	public Game(Stage primaryStage) {
 		gameWindow = new GameWindow(primaryStage, WIDTH, HEIGHT);
-		player = new Player(WIDTH / 2, 340);
+		player = new Player(WIDTH / 2, 390);
 
 		inputManager = new InputMenager(gameWindow.getCanvas());
 		missles = new ArrayList<MissleInterface>();
@@ -84,7 +84,7 @@ public class Game extends AnimationTimer {
 			if (m.isFiredByPlayer())
 				m.update(0, -5);
 			else {
-				m.update(0, 5);
+				m.update(0, m.getSpeed());
 			}
 		}
 		for (int i = 0; i < explosions.size(); i++) {
@@ -93,6 +93,11 @@ public class Game extends AnimationTimer {
 			}
 		}
 
+		if (liveEnemyNumber == 0) {
+			if (TimeHelper.checkIfTimePasses(System.currentTimeMillis(), 3000)) {
+				createNewLevel();
+			}
+		}
 	}
 
 	private void updatePlayer() {
@@ -147,11 +152,11 @@ public class Game extends AnimationTimer {
 		}
 	}
 
-	private long calculateDifficulty(){
-		return gameWindow.getGameLength() ;
+	private long calculateDifficulty() {
+		return gameWindow.getGameLength();
 
 	}
-	
+
 	private void updateEnemies() {
 		int update = (System.currentTimeMillis() / 1000 % 2 == 0) ? 1 : -1;
 
@@ -172,41 +177,38 @@ public class Game extends AnimationTimer {
 				}
 			}
 		}
-		if (liveEnemyNumber == 0)
-		{
-			this.stop();
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			player.setPosX(WIDTH/2);
-			player.setPosX(340);
-			 generateEnemyMatrix();
-			 liveEnemyNumber = ROWS * COLUMNS;
-			 this.start();
-		}
+	}
+
+	private void createNewLevel() {
+
+		missles.clear();
+		generateEnemyMatrix();
+		liveEnemyNumber = ROWS * COLUMNS;
+
 	}
 
 	private void generateEnemyMatrix() {
 		enemyList = new Enemy[ROWS][COLUMNS];
+		int firstLine = 10;
 		// ImageHelper imageHelper = new ImageHelper();
 		for (int i = 0; i < ROWS; i++) {
 			for (int j = 0; j < COLUMNS; j++) {
 				if (i == 0) {
-					enemyList[i][j] = new Enemy(j * ((WIDTH - 35) / COLUMNS) + 30, i * 30,
+					enemyList[i][j] = new Enemy(j * ((WIDTH - 35) / COLUMNS) + 30, firstLine + (i * 30),
 							new Image(getClass().getResourceAsStream("../entities/pictures/red.png")));
 				} else if (i == 1) {
-					enemyList[i][j] = new Enemy(j * ((WIDTH - 35) / COLUMNS) + 30, i * 30,
+					enemyList[i][j] = new Enemy(j * ((WIDTH - 35) / COLUMNS) + 30, firstLine + (i * 30),
 							new Image(getClass().getResourceAsStream("../entities/pictures/lightred.png")));
 				} else if (i == 2) {
-					enemyList[i][j] = new Enemy(j * ((WIDTH - 35) / COLUMNS) + 30, i * 30,
+					enemyList[i][j] = new Enemy(j * ((WIDTH - 35) / COLUMNS) + 30, firstLine + (i * 30),
 							new Image(getClass().getResourceAsStream("../entities/pictures/orange2.png")));
 				} else {
-					enemyList[i][j] = new Enemy(j * ((WIDTH - 35) / COLUMNS) + 30, i * 30,
+					enemyList[i][j] = new Enemy(j * ((WIDTH - 35) / COLUMNS) + 30, firstLine + (i * 30),
 							new Image(getClass().getResourceAsStream("../entities/pictures/green.png")));
 				}
 			}
 		}
 	}
+
+	
 }

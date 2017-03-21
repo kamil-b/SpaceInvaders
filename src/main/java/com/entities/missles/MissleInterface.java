@@ -6,13 +6,15 @@ import javafx.scene.canvas.GraphicsContext;
 
 public interface MissleInterface {
 
-	public boolean isFiredByPlayer();
+	boolean isFiredByPlayer();
 
-	public void show(GraphicsContext gc);
+	void show(GraphicsContext gc);
 
-	public void update(int i, int j);
+	void update(int i, int j);
 
-	public boolean checkColision(Ship ship);
+	boolean checkColision(Ship ship);
 
+	int getSpeed();
 
+	int getPosX();
 }

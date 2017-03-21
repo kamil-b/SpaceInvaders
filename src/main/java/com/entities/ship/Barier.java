@@ -44,9 +44,9 @@ public class Barier extends Enemy {
 
 	private void showBarierStatusBar(GraphicsContext gc) {
 		gc.setFill(Color.RED);
-		gc.fillRect(20, 380, ENERGY_CAP * 2, 10);
+		gc.fillRect(20, 430, ENERGY_CAP * 2, 10);
 		gc.setFill(Color.LIGHTSKYBLUE);
-		gc.fillRect(20, 380, energy * 2, 10);
+		gc.fillRect(20, 430, energy * 2, 10);
 	}
 
 	public boolean isHit() {

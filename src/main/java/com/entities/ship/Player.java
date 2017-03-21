@@ -5,7 +5,7 @@ import com.utiles.Game;
 import javafx.scene.image.Image;
 
 public class Player extends Ship {
-
+	public static int playerPositionX;
 	private Barier barier;
 
 	public Player(int posX, int posY) {
@@ -34,6 +34,8 @@ public class Player extends Ship {
 		posY += dy;
 		barier.setPosX(posX - 5);
 		barier.setPosY(posY - 5);
+		
+		playerPositionX = posX;
 	}
 
 	

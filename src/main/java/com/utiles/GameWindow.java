@@ -2,12 +2,21 @@ package com.utiles;
 
 import java.util.Random;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontSmoothingType;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 public class GameWindow {
@@ -17,7 +26,8 @@ public class GameWindow {
 	private long gameLength;
 	private Canvas canvas;
 	private GraphicsContext gc;
-	private VBox vbox;
+	private VBox gameWindowVbox, scoreBarVbox;
+	private Text scoreText;
 	private Stage primaryStage;
 	private int width;
 	private int height;
@@ -30,10 +40,19 @@ public class GameWindow {
 
 		canvas = new Canvas(WIDTH, HEIGHT);
 		this.gc = canvas.getGraphicsContext2D();
-		this.vbox = new VBox(canvas);
+		scoreText = setUpStatisticBarTextOptions();
+
+		scoreBarVbox = new VBox(scoreText);
+		scoreBarVbox.setMinHeight(30);
+		scoreBarVbox.setPadding(new Insets(0, 30, 0, 0));
+		scoreBarVbox.setAlignment(Pos.CENTER_RIGHT);
+		scoreBarVbox.setBackground(new Background(new BackgroundFill(Color.DARKRED, null, null)));
+
+		this.gameWindowVbox = new VBox(scoreBarVbox, canvas);
 		this.primaryStage = new Stage();
-		this.primaryStage.setScene(new Scene(vbox));
+		this.primaryStage.setScene(new Scene(gameWindowVbox));
 		canvas.setFocusTraversable(true);
+
 		stars = new Point2D[STARS_AMOUNT];
 		for (int i = 0; i < STARS_AMOUNT; i++) {
 			stars[i] = new Point2D(new Random().nextInt(width), new Random().nextInt(height));
@@ -66,6 +85,13 @@ public class GameWindow {
 			gc.fillOval(stars[i].getX(), stars[i].getY(), number, number);
 		}
 
+		// repaintScoreBar();
+
+	}
+
+	private void repaintScoreBar() {
+		gc.setFill(Color.MIDNIGHTBLUE);
+		gc.fillRect(0, 0, Game.WIDTH, 40);
 	}
 
 	public void updateBackground() {
@@ -88,17 +114,22 @@ public class GameWindow {
 
 	public void showGameStaticstics(int score) {
 		gameLength = (System.currentTimeMillis() - timeAtGameStart) / 1000;
-		gc.setFill(Color.RED);
-		gc.fillText("Score: " + (score * 10), 500, 390);
-		gc.fillText("Time: " + gameLength, 450, 390);
+		scoreText.setText("Time:  " + String.valueOf(gameLength) + "   Score:  " + score);
+
 	}
-	
+
 	public long getTimeAtGameStart() {
 		return timeAtGameStart;
 	}
-	
+
 	public long getGameLength() {
 		return gameLength;
 	}
 
+	private Text setUpStatisticBarTextOptions() {
+		Text text = new Text();
+		text.setFont(Font.font("Verdana", FontWeight.BOLD, 20));
+		text.setTextAlignment(TextAlignment.RIGHT);
+		return text;
+	}
 }

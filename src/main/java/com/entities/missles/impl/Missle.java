@@ -10,13 +10,18 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 public abstract class Missle implements MissleInterface {
+	protected static final int NORMAL_SPEED = 5;
+	protected static final int SLOW_SPEED = 3;
+
 	protected MissleType missleType;
 	protected Color color;
 	protected boolean isFiredByPlayer = false;
+	protected int speed = NORMAL_SPEED;;
 
 	protected Image image;
 	protected int posX;
 	protected int posY;
+	protected int playerPosXatLaunch;
 
 	/**
 	 * 
@@ -33,16 +38,6 @@ public abstract class Missle implements MissleInterface {
 		posY += dy;
 	}
 
-	/*
-	 * public void show(GraphicsContext gc) {
-	 * 
-	 * if (isFiredByPlayer) { color = Color.RED; } else { color =
-	 * Color.LIGHTGREEN; } gc.setFill(color);
-	 * 
-	 * if (missleType.equals(MissleType.BIG_MISSLE)) { gc.fillOval(posX, posY,
-	 * 10, 10); } else { gc.fillRect(posX, posY, 2, 6); } }
-	 */
-
 	public boolean isFiredByPlayer() {
 		return isFiredByPlayer;
 	}
@@ -56,6 +51,14 @@ public abstract class Missle implements MissleInterface {
 		} else {
 			return false;
 		}
+	}
+
+	public int getSpeed() {
+		return speed;
+	}
+
+	public int getPosX(){
+		return posX;
 	}
 
 }
