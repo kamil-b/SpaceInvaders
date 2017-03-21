@@ -21,7 +21,7 @@ public abstract class Missle implements MissleInterface {
 	protected Image image;
 	protected int posX;
 	protected int posY;
-	protected int playerPosXatLaunch;
+	protected int damage = 10;
 
 	/**
 	 * 
@@ -52,13 +52,17 @@ public abstract class Missle implements MissleInterface {
 			return false;
 		}
 	}
-
+	
 	public int getSpeed() {
 		return speed;
 	}
 
 	public int getPosX(){
 		return posX;
+	}
+	
+	public int getDamage(){
+		return damage;
 	}
 
 }

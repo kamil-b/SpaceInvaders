@@ -24,12 +24,11 @@ public abstract class Ship {
 		posX = posX + dx;
 	}
 	
-
-
 	public void show(GraphicsContext gc) {
 		gc.drawImage(image, posX, posY);
 	}
 
+	
 	public boolean checkColision(Ship ship){
 		Point2D me = new Point2D(posX, posY);
 		Point2D notMe = new Point2D(ship.getPosX()+15,ship.getPosY()+15);
@@ -56,6 +55,8 @@ public abstract class Ship {
 	public void setPosY(int posY) {
 		this.posY = posY;
 	}
+	
+
 	
 	
 }

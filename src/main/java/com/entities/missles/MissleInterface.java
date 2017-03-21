@@ -17,4 +17,7 @@ public interface MissleInterface {
 	int getSpeed();
 
 	int getPosX();
+
+	int getDamage();
+	
 }

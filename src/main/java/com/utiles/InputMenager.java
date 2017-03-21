@@ -11,25 +11,30 @@ public class InputMenager {
 	private boolean right;
 	private boolean space;
 
+	private boolean stop = false;
+
 	public InputMenager(Canvas canvas) {
 		this.canvas = canvas;
 	}
 
 	public void checkIfKeyPressed() {
+
 		canvas.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
 			public void handle(KeyEvent key) {
-				switch (key.getCode()) {
-				case A:
-					left = true;
-					break;
-				case D:
-					right = true;
-					break;
-				case SPACE:
-					space = true;
-				default:
-					break;
+				if (stop == false) {
+					switch (key.getCode()) {
+					case A:
+						left = true;
+						break;
+					case D:
+						right = true;
+						break;
+					case SPACE:
+						space = true;
+					default:
+						break;
+					}
 				}
 			}
 		});
@@ -37,20 +42,21 @@ public class InputMenager {
 		canvas.setOnKeyReleased(new EventHandler<KeyEvent>() {
 
 			public void handle(KeyEvent key) {
-				switch (key.getCode()) {
-				case A:
-					left = false;
-					break;
-				case D:
-					right = false;
-					break;
-				case SPACE:
-					space = false;
-				default:
-					break;
+				if (stop == false) {
+					switch (key.getCode()) {
+					case A:
+						left = false;
+						break;
+					case D:
+						right = false;
+						break;
+					case SPACE:
+						space = false;
+					default:
+						break;
+					}
 				}
 			}
-
 		});
 	}
 
@@ -65,4 +71,12 @@ public class InputMenager {
 	public boolean isSpace() {
 		return space;
 	}
+
+	public void stop() {
+		this.stop = true;
+		left = false;
+		right = false;
+		space = false;
+	}
+
 }

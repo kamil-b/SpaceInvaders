@@ -8,7 +8,7 @@ public class Barier extends Enemy {
 
 	private final int BARIER_SHOW_TIME = 200;
 	private final int ENERGY_CAP = 100;
-	
+
 	private boolean isVisiable = false;
 	private long timeAfterHit = 0;
 	private boolean isHit = false;
@@ -32,14 +32,19 @@ public class Barier extends Enemy {
 	public void show(GraphicsContext gc) {
 
 		showBarierStatusBar(gc);
+
+		if (energy <= 0) {
+			isVisiable = false;
+		}
 		if (isVisiable == true) {
-			timeAfterHit = timeAfterHit + (timeAfterHit - System.currentTimeMillis()); // no idea why it works fine... kinda
+			timeAfterHit = timeAfterHit + (timeAfterHit - System.currentTimeMillis());
 			gc.drawImage(image, posX, posY);
 			if (timeAfterHit > BARIER_SHOW_TIME) {
 				isVisiable = false;
 				timeAfterHit = 0;
 			}
 		}
+
 	}
 
 	private void showBarierStatusBar(GraphicsContext gc) {
@@ -57,16 +62,21 @@ public class Barier extends Enemy {
 		this.isHit = isHit;
 	}
 
-	public void updateBarierStatus(int score) {
+	public void updateBarierStatus(int score, int damage) {
 		int scoreChange = score - recentPlayerScore;
 		energy = energy + scoreChange;
 		if (isHit) {
-			energy = energy - 10 ;
+			energy = energy - damage;
 			isHit = false;
 		}
 		recentPlayerScore = score;
-		if(energy > ENERGY_CAP)
+		if (energy > ENERGY_CAP) {
 			energy = ENERGY_CAP;
+		}
+	}
+
+	public int getEnergy() {
+		return energy;
 	}
 
 }

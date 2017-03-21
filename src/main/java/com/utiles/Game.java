@@ -9,6 +9,7 @@ import com.entities.missles.MissleFactory;
 import com.entities.ship.Enemy;
 import com.entities.ship.Explosion;
 import com.entities.ship.Player;
+import com.entities.ship.Ship;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.image.Image;
@@ -25,7 +26,7 @@ public class Game extends AnimationTimer {
 	private Player player;
 	private Enemy[][] enemyList;
 	private List<MissleInterface> missles;
-	private InputMenager inputManager;
+	// private InputMenager inputManager;
 	private int misslesCount = 0;
 
 	public static int WIDTH = 700;
@@ -36,9 +37,8 @@ public class Game extends AnimationTimer {
 
 	public Game(Stage primaryStage) {
 		gameWindow = new GameWindow(primaryStage, WIDTH, HEIGHT);
-		player = new Player(WIDTH / 2, 390);
+		player = new Player(gameWindow.getCanvas(), WIDTH / 2, 390);
 
-		inputManager = new InputMenager(gameWindow.getCanvas());
 		missles = new ArrayList<MissleInterface>();
 		explosions = new ArrayList<Explosion>();
 		generateEnemyMatrix();
@@ -101,20 +101,19 @@ public class Game extends AnimationTimer {
 	}
 
 	private void updatePlayer() {
-		inputManager.checkIfKeyPressed();
-		if (inputManager.isLeft()) {
-			player.update(-5, 0);
-		} else if (inputManager.isRight()) {
-			player.update(5, 0);
-		}
+		player.update();
 		for (int x = 0; x < missles.size(); x++) {
 			if (!missles.get(x).isFiredByPlayer() && missles.get(x).checkColision(player)) {
 				player.getBarier().setHit(true);
 				player.getBarier().setVisiable(true);
+				
 				missles.remove(x);
 			}
+			player.getBarier().updateBarierStatus(score, missles.get(x).getDamage());
 		}
-		player.getBarier().updateBarierStatus(score);
+		if (player.getBarier().getEnergy() <= 0) {
+			player.explode();
+		}
 
 	}
 
@@ -128,7 +127,7 @@ public class Game extends AnimationTimer {
 			if (nextMissle > 300 - calculateDifficulty()) {
 				if (misslesCount == 5) {
 					missle = MissleFactory.getBigMissle(enemyList[row][column].getPosX(),
-							enemyList[row][column].getPosY());
+							enemyList[row][column].getPosY(), player.getPosX());
 					misslesCount = 0;
 				} else {
 					missle = MissleFactory.getNormalMissle(enemyList[row][column].getPosX(),
@@ -145,7 +144,7 @@ public class Game extends AnimationTimer {
 
 	private void shotMissleByPlayer() {
 		double nextMissle = System.currentTimeMillis() - timeWhenMissleShotByPlayer;
-		if (inputManager.isSpace() && nextMissle > 300) {
+		if (player.isFirePressed() && nextMissle > 300) {
 			MissleInterface missle = MissleFactory.getPlayerMissle(player.getPosX() + 15, player.getPosY());
 			missles.add(missle);
 			timeWhenMissleShotByPlayer = System.currentTimeMillis();
@@ -172,7 +171,7 @@ public class Game extends AnimationTimer {
 						score++;
 						missles.remove(x);
 						liveEnemyNumber--;
-						System.out.println(liveEnemyNumber);
+						
 					}
 				}
 			}
@@ -210,5 +209,4 @@ public class Game extends AnimationTimer {
 		}
 	}
 
-	
 }
